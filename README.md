@@ -26,5 +26,4 @@ fileNotifier.Add("./config.json")
 **Config file type must be JSON**
 
 ## To-Do:
-- Generalised struct so that it can have parameters according to user.
 - Config file can support YAML extension 

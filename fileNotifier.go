@@ -24,7 +24,7 @@ var outputStringYaml = ""
 var valArrStr []string
 var valArrInt []float64
 var valArrStrYaml []string
-var valArrIntYaml []int // yaml is not typecasting on its own unlike json thats why int
+var valArrIntYaml []int
 
 // to reinitialize map and string
 func clearAllJson() {

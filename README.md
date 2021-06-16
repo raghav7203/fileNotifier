@@ -8,7 +8,7 @@ go get github.com/raghav7203/fileNotifier
 <h4>Cross platform: Windows, Linux.</h4>
 
 ## Usage:
-
+- For JSON config
 ```go
 package main
 
@@ -17,13 +17,26 @@ import (
 )
 
 func main() {
-
-fileNotifier.Add("./config.json")
-
+	fileNotifier.AddJson("./config.json", change)
 }
-```
+func change(m map[string]interface{}, s string) {
+	fmt.Println(m) 
+	fmt.Println(s)
+}
+``` 
+- For YAML config
+```go
+package main
 
-**Config file type must be JSON**
+import (
+	"github.com/raghav7203/fileNotifier"
+)
 
-## To-Do:
-- Config file can support YAML extension 
+func main() {
+	fileNotifier.AddYaml("./config.yaml", change)
+}
+func change(m map[interface{}]interface{}, s string) {
+	fmt.Println(m)
+	fmt.Println(s)
+}
+``` 

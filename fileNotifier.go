@@ -24,7 +24,7 @@ var outputStringYaml = ""
 var valArrStr []string
 var valArrInt []float64
 var valArrStrYaml []string
-var valArrIntYaml []int
+var valArrIntYaml []int // yaml is not typecasting on its own unlike json thats why int
 
 // to reinitialize map and string
 func clearAllJson() {
@@ -34,15 +34,22 @@ func clearAllJson() {
 	}
 }
 
-// adding watcher to the json config
-func AddJson(filePath string, change func(m map[string]interface{}, s string)) {
-	// checking for json extension file
+func checkExtJson(filePath string) bool {
 	fileExt := strings.SplitAfter(filePath, ".")
 	if fileExt[len(fileExt)-1] != "json" {
 		fmt.Println("json config not found")
-		return
+		return false
 	}
 	fmt.Println("json config found")
+	return true
+}
+
+// adding watcher to the json config
+func AddJson(filePath string, change func(m map[string]interface{}, s string)) {
+	// checking for json extension file
+	if !checkExtJson(filePath) {
+		return
+	}
 
 	// maps for old and new state of config file
 	old_config := make(map[string]interface{})
@@ -140,17 +147,27 @@ func parseArrayJson(anArray1 []interface{}, anArray2 []interface{}, key string) 
 	for i, val := range anArray2 {
 		switch concreteVal := val.(type) {
 		case map[string]interface{}:
-			if _, ok := anArray1[i].(map[string]interface{}); ok {
+			if len(anArray1) > i {
 				parseMapJson(anArray1[i].(map[string]interface{}), anArray2[i].(map[string]interface{}))
 			} else {
 				parseMapJson(nil, anArray2[i].(map[string]interface{}))
 			}
+			// if _, ok := anArray1[i].(map[string]interface{}); ok {
+			// 	parseMapJson(anArray1[i].(map[string]interface{}), anArray2[i].(map[string]interface{}))
+			// } else {
+			// 	parseMapJson(nil, anArray2[i].(map[string]interface{}))
+			// }
 		case []interface{}:
-			if _, ok := anArray1[i].([]interface{}); ok {
+			if len(anArray1) > i {
 				parseArrayJson(anArray1[i].([]interface{}), anArray2[i].([]interface{}), key)
 			} else {
 				parseArrayJson(nil, anArray2[i].([]interface{}), key)
 			}
+			// if _, ok := anArray1[i].([]interface{}); ok {
+			// 	parseArrayJson(anArray1[i].([]interface{}), anArray2[i].([]interface{}), key)
+			// } else {
+			// 	parseArrayJson(nil, anArray2[i].([]interface{}), key)
+			// }
 		default:
 			// case where iteration is smaller than old config(implies only modification) and else has new values
 			if len(anArray1) > i {
@@ -196,14 +213,22 @@ func clearAllYaml() {
 	}
 }
 
-func AddYaml(filePath string, change func(m map[interface{}]interface{}, s string)) {
-	// checking for yaml extension file
+func checkExtYaml(filePath string) bool {
 	fileExt := strings.SplitAfter(filePath, ".")
 	if fileExt[len(fileExt)-1] != "yaml" {
 		fmt.Println("yaml config not found")
-		return
+		return false
 	}
 	fmt.Println("yaml config found")
+	return true
+}
+
+func AddYaml(filePath string, change func(m map[interface{}]interface{}, s string)) {
+	// checking for yaml extension file
+	if !checkExtYaml(filePath) {
+		return
+	}
+
 	old_config := make(map[interface{}]interface{})
 	new_config := make(map[interface{}]interface{})
 
@@ -289,17 +314,27 @@ func parseArrayYaml(anArray1 []interface{}, anArray2 []interface{}, key interfac
 	for i, val := range anArray2 {
 		switch concreteVal := val.(type) {
 		case map[interface{}]interface{}:
-			if _, ok := anArray1[i].(map[interface{}]interface{}); ok {
+			if len(anArray1) > i {
 				parseMapYaml(anArray1[i].(map[interface{}]interface{}), anArray2[i].(map[interface{}]interface{}))
 			} else {
 				parseMapYaml(nil, anArray2[i].(map[interface{}]interface{}))
 			}
+			// if _, ok := anArray1[i].(map[interface{}]interface{}); ok {
+			// 	parseMapYaml(anArray1[i].(map[interface{}]interface{}), anArray2[i].(map[interface{}]interface{}))
+			// } else {
+			// 	parseMapYaml(nil, anArray2[i].(map[interface{}]interface{}))
+			// }
 		case []interface{}:
-			if _, ok := anArray1[i].([]interface{}); ok {
+			if len(anArray1) > i {
 				parseArrayYaml(anArray1[i].([]interface{}), anArray2[i].([]interface{}), key)
 			} else {
 				parseArrayYaml(nil, anArray2[i].([]interface{}), key)
 			}
+			// if _, ok := anArray1[i].([]interface{}); ok {
+			// 	parseArrayYaml(anArray1[i].([]interface{}), anArray2[i].([]interface{}), key)
+			// } else {
+			// 	parseArrayYaml(nil, anArray2[i].([]interface{}), key)
+			// }
 		default:
 			if len(anArray1) > i {
 				if anArray1[i] != concreteVal {

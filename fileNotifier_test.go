@@ -86,7 +86,7 @@ func TestFileNotifier(t *testing.T) {
 		yaml.Unmarshal(body1, &old_config)
 		yaml.Unmarshal(body2, &new_config)
 		parseMapYaml(old_config, new_config)
-		expectedOutputString := "Name changed nil  to Raghav Sharma\nIndex 0 changed 74046 to 7404681005\nparam1 changed value1 to value12\np1 changed v1 to v12\np41 changed v4 to v42\nIndex 1 changed 2 to 22\nIndex 4 changed 8 to 76\nnil to 8\nq changed e to er\nnil to 7404681005\nName1 changed Raghav to Raghav Sharma\nparam1r changed nil  to value1\nparam2r changed nil  to value2\np1r changed nil  to v1r\np2r changed nil  to v2r\np3r changed nil  to v3r\nnil to 1\nnil to 2\nnil to 7\nnil to 52\nnil to 6\nnil to 8\nnil to 3\np41r changed nil  to v4ree\n"
+		expectedOutputString := "param2r changed nil  to value2\np2r changed nil  to v2r\np3r changed nil  to v3r\np41r changed nil  to v4ree\nnil to 2\nnil to 3\nnil to 1\nnil to 2\nnil to 7\nnil to 52\nnil to 6\nnil to 8\nnil to 3\np1r changed nil  to v1r\nparam1r changed nil  to value1\nName1 changed Raghav to Raghav Sharma\nIndex 0 changed 74046 to 7404681005\nparam1 changed value1 to value12\np41 changed v4 to v42\nIndex 1 changed 2 to 22\nIndex 4 changed 8 to 76\nnil to 8\np1 changed v1 to v12\nIndex 4 changed 73 to 234\nIndex 5 changed 7 to 73\nnil to 7\nName changed nil  to Raghav Sharma\nnil to 7404681005\nq changed e to er\n"
 		arr1 := strings.Split(outputStringYaml, "\n")
 		sort.Strings(arr1)
 		arr2 := strings.Split(expectedOutputString, "\n")
@@ -115,5 +115,37 @@ func TestFileNotifier(t *testing.T) {
 	Convey("check extension yaml", t, func() {
 		So(checkExtYaml("conf.yaml"), ShouldBeTrue)
 		So(checkExtYaml("conf.yam"), ShouldBeFalse)
+	})
+
+	Convey("matching output string in delete(json)", t, func() {
+		old_config := make(map[string]interface{})
+		new_config := make(map[string]interface{})
+		body1, _ := ioutil.ReadFile("./config2.json")
+		body2, _ := ioutil.ReadFile("./config1.json")
+		json.Unmarshal(body1, &old_config)
+		json.Unmarshal(body2, &new_config)
+		deleteMapJson(old_config, new_config)
+		expectedOutputString := "param1 changed value12 to value1\np41 changed v42 to v4\nIndex 1 changed 22 to 22\nIndex 4 changed 76 to 76\n8 to nil\np1 changed v12 to v1\nparam1r changed value1 to nil\nparam2r changed value2 to nil\np2r changed v2r to nil\np3r changed v3r to nil\np41r changed v4ree to nil\n1 to nil\n2 to nil\n7 to nil\n52 to nil\n6 to nil\n8 to nil\n3 to nil\np1r changed v1r to nil\nIndex 4 changed 234 to 234\nIndex 5 changed 73 to 73\n7 to nil\n2 to nil\n3 to nil\nq changed e to er\nName changed Raghav Sharma to nil\n7404681005 to nil\nName1 changed Raghav Sharma to Raghav\nIndex 0 changed 7404681005 to 74046\n"
+		arr1 := strings.Split(outputStringJson, "\n")
+		sort.Strings(arr1)
+		arr2 := strings.Split(expectedOutputString, "\n")
+		sort.Strings(arr2)
+		So(arr1, ShouldResemble, arr2)
+	})
+
+	Convey("matching output string in delete(yaml)", t, func() {
+		old_config := make(map[interface{}]interface{})
+		new_config := make(map[interface{}]interface{})
+		body1, _ := ioutil.ReadFile("./config2.yaml")
+		body2, _ := ioutil.ReadFile("./config1.yaml")
+		json.Unmarshal(body1, &old_config)
+		json.Unmarshal(body2, &new_config)
+		deleteMapYaml(old_config, new_config)
+		expectedOutputString := "param1 changed value12 to value1\np41 changed v42 to v4\nIndex 1 changed 22 to 22\nIndex 4 changed 76 to 76\n8 to nil\np1 changed v12 to v1\nparam1r changed value1 to nil\nparam2r changed value2 to nil\np2r changed v2r to nil\np3r changed v3r to nil\np41r changed v4ree to nil\n1 to nil\n2 to nil\n7 to nil\n52 to nil\n6 to nil\n8 to nil\n3 to nil\np1r changed v1r to nil\nIndex 4 changed 234 to 234\nIndex 5 changed 73 to 73\n7 to nil\n2 to nil\n3 to nil\nq changed e to er\nName changed Raghav Sharma to nil\n7404681005 to nil\nName1 changed Raghav Sharma to Raghav\nIndex 0 changed 7404681005 to 74046\n"
+		arr1 := strings.Split(outputStringJson, "\n")
+		sort.Strings(arr1)
+		arr2 := strings.Split(expectedOutputString, "\n")
+		sort.Strings(arr2)
+		So(arr1, ShouldResemble, arr2)
 	})
 }
